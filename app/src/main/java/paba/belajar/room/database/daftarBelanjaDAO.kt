@@ -16,6 +16,9 @@ interface daftarBelanjaDAO {
     fun update(isi_tanggal: String, isi_item: String, isi_jumlah: String, isi_status: Int,
                pilihid: Int)
 
+    @Query("SELECT * FROM daftarBelanja WHERE id=:isi_id")
+    suspend fun getItem(isi_id : Int) : daftarBelanja
+
     @Delete
     fun delete (daftar: daftarBelanja)
 
