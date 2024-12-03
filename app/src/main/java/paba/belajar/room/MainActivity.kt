@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
         DB = daftarBelanjaDB.getDatabase(this)
         adapterDaftar = adapterDaftar(arDaftar)
 
@@ -53,12 +54,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, TambahDaftar::class.java))
         }
 
-        super.onStart()
-        CoroutineScope(Dispatchers.Main).async {
-            val daftarBelanja = DB.fundaftarBelanjaDAO().selectAll()
-            Log.d("data ROOM", daftarBelanja.toString())
-            adapterDaftar.isiData(daftarBelanja)
-        }
+
     }
 
     private lateinit var DB : daftarBelanjaDB
@@ -66,4 +62,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapterDaftar: adapterDaftar
     private var arDaftar : MutableList<daftarBelanja> = mutableListOf()
 
+    override fun onStart() {
+        super.onStart()
+        CoroutineScope(Dispatchers.Main).async {
+            val daftarBelanja = DB.fundaftarBelanjaDAO().selectAll()
+            Log.d("data ROOM", daftarBelanja.toString())
+            adapterDaftar.isiData(daftarBelanja)
+        }
+    }
 }
