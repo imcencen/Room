@@ -7,10 +7,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import paba.belajar.room.database.daftarBelanja
 import paba.belajar.room.database.daftarBelanjaDB
 
 class MainActivity : AppCompatActivity() {
@@ -24,6 +27,11 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         DB = daftarBelanjaDB.getDatabase(this)
+        adapterDaftar = adapterDaftar(arDaftar)
+
+        var _rvDaftar = findViewById<RecyclerView>(R.id.rvDaftarBelanja)
+        _rvDaftar.layoutManager = LinearLayoutManager(this)
+        _rvDaftar.adapter = adapterDaftar
 
         val _fabAdd = findViewById<FloatingActionButton>(R.id.fabAdd)
         _fabAdd.setOnClickListener {
@@ -34,9 +42,13 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).async {
             val daftarBelanja = DB.fundaftarBelanjaDAO().selectAll()
             Log.d("data ROOM", daftarBelanja.toString())
+            adapterDaftar.isiData(daftarBelanja)
         }
     }
 
     private lateinit var DB : daftarBelanjaDB
+
+    private lateinit var adapterDaftar: adapterDaftar
+    private var arDaftar : MutableList<daftarBelanja> = mutableListOf()
 
 }
