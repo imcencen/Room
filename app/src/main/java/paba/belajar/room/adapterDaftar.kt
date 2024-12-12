@@ -18,12 +18,15 @@ class adapterDaftar ( private val daftarBelanja : MutableList<daftarBelanja>) :
 
         var _btnEdit = itemView.findViewById<ImageButton>(R.id.btnEdit)
         var _btnDelete = itemView.findViewById<ImageButton>(R.id.btnDelete)
+        var _btnFinish = itemView.findViewById<ImageButton>(R.id.btnFinish)
     }
 
     private lateinit var onItemClickCallback : OnItemClickCallback
 
     interface OnItemClickCallback {
         fun delData(dtBelanja: daftarBelanja)
+        fun finishData(dtBelanja: daftarBelanja)
+
     }
 
     fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
@@ -55,6 +58,10 @@ class adapterDaftar ( private val daftarBelanja : MutableList<daftarBelanja>) :
 
         holder._btnDelete.setOnClickListener {
             onItemClickCallback.delData(daftar)
+        }
+
+        holder._btnFinish.setOnClickListener {
+            onItemClickCallback.finishData(daftar)
         }
     }
 

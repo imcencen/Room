@@ -16,6 +16,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import paba.belajar.room.database.daftarBelanja
 import paba.belajar.room.database.daftarBelanjaDB
+import paba.belajar.room.database.historyBarang
+import paba.belajar.room.database.historyBarangDB
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         DB = daftarBelanjaDB.getDatabase(this)
+        DB2 = historyBarangDB.getDatabase(this)
         adapterDaftar = adapterDaftar(arDaftar)
 
         val _rvDaftar = findViewById<RecyclerView>(R.id.rvDaftarBelanja)
@@ -46,6 +49,33 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
+
+                override fun finishData(dtBelanja: daftarBelanja) {
+                    CoroutineScope(Dispatchers.IO).async {
+
+
+                        // Create a new historyBarang object based on the dtBelanja (this depends on your entity's structure)
+                        val historyItem = historyBarang(
+                            id = dtBelanja.id,
+                            tanggal = dtBelanja.tanggal,
+                            item = dtBelanja.item,
+                            jumlah = dtBelanja.jumlah,
+                            status = dtBelanja.status
+                        )
+
+                        // Insert the new item into the historyBarangDB
+                        DB2.fundaftarHistoryDAO().insert(historyItem)
+
+                        // After inserting, delete the item from daftarBelanjaDB
+                        DB.fundaftarBelanjaDAO().delete(dtBelanja)
+                        val updatedList = DB.fundaftarBelanjaDAO().selectAll()
+
+                        // Update the UI with the new list
+                        withContext(Dispatchers.Main) {
+                            adapterDaftar.isiData(updatedList)
+                        }
+                    }
+                }
             }
         )
 
@@ -53,11 +83,10 @@ class MainActivity : AppCompatActivity() {
         _fabAdd.setOnClickListener {
             startActivity(Intent(this, TambahDaftar::class.java))
         }
-
-
     }
 
     private lateinit var DB : daftarBelanjaDB
+    private lateinit var DB2 : historyBarangDB
 
     private lateinit var adapterDaftar: adapterDaftar
     private var arDaftar : MutableList<daftarBelanja> = mutableListOf()
